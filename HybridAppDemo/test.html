@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head lang="zh-cmn-Hans">
+        <meta charset="UTF-8">
+            <title>DWebviewJavaScriptBridge Test</title>
+            <meta name="renderer" content="webkit">
+                <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+                    <meta name="viewport" content="width=device-width,initial-scale=0.5,user-scalable=no"/>
+                    
+                    </head>
+    <style>
+    .btn {
+            text-align: center;
+            background: dodgerblue;
+            color: white;
+            padding: 20px;
+            margin: 30px;
+            font-size: 24px;
+            border-radius: 4px;
+            box-shadow: 4px 2px 10px #999;
+        }
+    
+    .btn:active {
+        opacity: .7;
+        box-shadow: 4px 2px 10px #555;
+    }
+    
+        </style>
+    <body>
+        <div class="btn" onclick="login()">用户登录</div>
+        <div class="btn" onclick="startLocatin()">开始定位</div>
+        <div class="btn" onclick="exitPage()">关闭页面</div>
+        <div class="btn" onclick="confirm('Press a button')">confirm test</div>
+        <div class="btn" onclick="promptTest()">prompt test</div>
+        
+        <script>
+            
+        var bridge = getJsBridge();
+        console.log(bridge);
+        
+        // 所以H5传参数都通过JSON字符串
+        
+        // H5 调 native
+        function login() {
+            bridge.call("userLogin", {params: "{\"account\":\"13699890394\",\"pw\":\"666666\"}"});
+        }
+        
+        function startLocatin() {
+            bridge.call("startToLocation", {params: "{\"token\":\"sdhajkjj33778shdjj\",\"city\":\"深圳\"}"}, function (backValue) {
+                        callNativeLog("native返回参数: "+backValue);
+                        });
+        }
+        
+        function exitPage() {
+            bridge.call("exitPage", {params:""});
+        }
+        
+        function promptTest(){
+            let res = prompt('Please input user name.','你好，世界');
+            callNativeLog(res);
+        }
+        
+        function callNativeLog(msg){
+            let args = "{\"log\":\""+msg+"\"}";
+            bridge.call("log", {params:args});
+        }
+        
+        // native 调H5
+        function test1(paramsDic){
+            
+            callNativeLog("navtive传参: "+paramsDic.arg1+"--"+paramsDic.arg2);
+    
+            return "H5回调信息";
+        }
+        
+        function test2(){
+            callNativeLog("无传值方法调用");
+        }
+        
+        
+        </script>
+    </body>
+</html>
